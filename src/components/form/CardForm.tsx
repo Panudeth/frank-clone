@@ -73,9 +73,9 @@ const generation = [
 ]
 
 export const CardForm = ({onlyCarForm}: {onlyCarForm?: boolean}) => {
-  const [searchDara, setSearctData] = useState<IFormInputData>({
-    brand: "",
-    generation: "",
+  const [searchData, setSearctData] = useState<IFormInputData>({
+    brand: "empty",
+    generation: "empty",
     RegistrationYear: "",
     name: "",
     phone: "",
@@ -112,6 +112,7 @@ export const CardForm = ({onlyCarForm}: {onlyCarForm?: boolean}) => {
             helperText={errors.brand?.message}
             value={value}
             onChange={(e) => {
+              setSearctData({...searchData, brand: e.target.value})
               console.log(e.target.value)
               onChange(e.target.value)
             }}
@@ -140,6 +141,7 @@ export const CardForm = ({onlyCarForm}: {onlyCarForm?: boolean}) => {
             InputLabelProps={{
               shrink: true,
             }}
+            disabled={searchData.brand === "empty"}
             variant="outlined"
             size="small"
             margin="dense"
@@ -153,7 +155,9 @@ export const CardForm = ({onlyCarForm}: {onlyCarForm?: boolean}) => {
             }}
           >
             {generation
-              //   .filter((gen) => gen.type === brand.values)
+              .filter(
+                (gen) => gen.type === searchData.brand || gen.value === "empty"
+              )
               .map((option) => (
                 <MenuItem
                   disabled={option.id === 0}
@@ -170,24 +174,40 @@ export const CardForm = ({onlyCarForm}: {onlyCarForm?: boolean}) => {
         defaultValue={generation[0].value}
       />
       <Controller
-        as={
+        render={({onChange, onBlur, value, name}) => (
           <TextField
+            select={true}
             color="primary"
-            placeholder="ปีจดทะเบียน"
+            placeholder="รุ่น"
             InputLabelProps={{
               shrink: true,
             }}
+            disabled={
+              searchData.brand === "empty" && searchData.generation === "empty"
+            }
             variant="outlined"
             size="small"
             margin="dense"
             fullWidth={true}
             error={!!errors.RegistrationYear}
             helperText={errors.RegistrationYear?.message}
-          />
-        }
+            value={value}
+            onChange={(e) => {
+              console.log(e.target.value)
+              onChange(e.target.value)
+            }}
+          >
+            <MenuItem disabled={true} value="empty">
+              เลือกปีจดทะเบียน
+            </MenuItem>
+            <MenuItem value="2019">2019 (2563)</MenuItem>
+            <MenuItem value="2018">2018 (2562)</MenuItem>
+            <MenuItem value="2017">2017 (2561)</MenuItem>
+          </TextField>
+        )}
         name="RegistrationYear"
         control={control}
-        defaultValue=""
+        defaultValue="empty"
       />
       {!onlyCarForm && (
         <>
