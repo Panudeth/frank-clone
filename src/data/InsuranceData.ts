@@ -19,6 +19,8 @@ export interface IInsurance {
     generation: string
     garageType: string
     identifyTheDriver: string
+    currentCar: string
+    currentYear: string
 }
 
 export class InsuranceData implements IInsurance {
@@ -35,6 +37,9 @@ export class InsuranceData implements IInsurance {
     public generation: string
     public garageType: string
     public identifyTheDriver: string
+    public currentCar: string
+    public currentYear: string
+
 
     constructor(data: IInsurance) {
         const {
@@ -50,7 +55,10 @@ export class InsuranceData implements IInsurance {
             generation,
             id,
             garageType,
-            identifyTheDriver
+            identifyTheDriver,
+            currentCar,
+            currentYear,
+
         } = data
 
         this.id = id
@@ -66,5 +74,7 @@ export class InsuranceData implements IInsurance {
         this.generation = generation
         this.garageType = garageType
         this.identifyTheDriver = identifyTheDriver
+        this.currentCar = currentCar
+        this.currentYear = currentYear
     }
 }

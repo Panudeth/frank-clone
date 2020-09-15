@@ -98,7 +98,6 @@ export const CardForm = ({
   //   }
 
   const onSubmit = async (data: IFormInputData) => {
-    console.log(data)
     try {
       const res = await db
         .collection("insurance")
@@ -107,7 +106,12 @@ export const CardForm = ({
 
       const insuranceRes = res.docs.map(
         (each) =>
-          new InsuranceData({...each.data(), id: each.id} as InsuranceData)
+          new InsuranceData({
+            ...each.data(),
+            id: each.id,
+            currentCar: `${data.brand} ${data.generation}`,
+            currentYear: data.RegistrationYear,
+          } as InsuranceData)
       )
       const result = insuranceRes.filter(
         (ins) =>
@@ -125,7 +129,7 @@ export const CardForm = ({
     }
   }
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)} style={{margin: "auto"}}>
       <Typography variant="body1">รายละเอียดรถ</Typography>
       <Controller
         render={({onChange, onBlur, value, name}) => (

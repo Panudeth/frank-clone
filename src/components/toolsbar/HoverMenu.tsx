@@ -3,7 +3,14 @@ import {createStyles, makeStyles, Theme} from "@material-ui/core/styles"
 import Button from "@material-ui/core/Button"
 import ListItemText from "@material-ui/core/ListItemText"
 import {Phone} from "@material-ui/icons/"
-import {Box, IconButton, List, ListItem, Typography} from "@material-ui/core"
+import {
+  Box,
+  IconButton,
+  Link,
+  List,
+  ListItem,
+  Typography,
+} from "@material-ui/core"
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -18,8 +25,8 @@ const useStyles = makeStyles((theme: Theme) =>
       height: "26px",
       color: "#fff",
       margin: "auto 10px",
-        transition: "0.2s",
-      transform:'',
+      transition: "0.2s",
+      transform: "",
       overflow: "hidden",
       "&:hover": {
         width: "100px",
@@ -43,7 +50,7 @@ const useStyles = makeStyles((theme: Theme) =>
       color: "#617179",
       position: "fixed",
       top: "50px",
-      zIndex: 10,
+      zIndex: 99999,
       padding: "30px 0 0 0",
       minWidth: "300px",
     },
@@ -65,74 +72,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-const headerMenu = [
-  {
-    header: "รถยนต์",
-    id: 1,
-    subMenu: [
-      {title: "ซื้อประกันรถยนต์", link: "/page1"},
-      {title: "ชั้น18", link: "/page2"},
-    ],
-  },
-  {
-    header: "รถจักรยายยนต์",
-    id: 2,
-    subMenu: [
-      {title: "ซื้อประกันรถรถจักรยายยนต์00", link: "/page1"},
-      {title: "ชั้น17", link: "/page2"},
-    ],
-  },
-  {
-    header: "เดินทาง",
-    id: 3,
-    subMenu: [
-      {title: "ซื้อประกันรถรถจักรยายยนต์1", link: "/page1"},
-      {title: "ชั้น16", link: "/page2"},
-    ],
-  },
-  {
-    header: "อุบัติเหตุ",
-    id: 4,
-    subMenu: [
-      {title: "ซื้อประกันรถรถจักรยายยนต์2", link: "/page1"},
-      {title: "ชั้น15", link: "/page2"},
-    ],
-  },
-  {
-    header: "ที่อยู่อาศัย",
-    id: 5,
-    subMenu: [
-      {title: "ซื้อประกันรถรถจักรยายยนต์3", link: "/page1"},
-      {title: "ชั้น14", link: "/page2"},
-    ],
-  },
-  {
-    header: "ประกันกลุ่ม",
-    id: 6,
-    subMenu: [
-      {title: "ซื้อประกันรถรถจักรยายยนต์4", link: "/page1"},
-      {title: "ชั้น13", link: "/page2"},
-    ],
-  },
-  {
-    header: "ประกันสุขภาพ",
-    id: 7,
-    subMenu: [
-      {title: "ซื้อประกันรถรถจักรยายยนต์5", link: "/page1"},
-      {title: "ชั้น12", link: "/page2"},
-    ],
-  },
-  {
-    header: "เกี่ยวกับเรา",
-    id: 8,
-    subMenu: [
-      {title: "ซื้อประกันรถรถจักรยายยนต์6", link: "/page1"},
-      {title: "ชั้น11", link: "/page2"},
-    ],
-  },
-]
-
-export const HoverMenu = () => {
+export const HoverMenu = ({hoverMenu}: {hoverMenu: any}) => {
   const classes = useStyles()
   const [menuSelect, setMenuSelect] = useState<number>(-1)
 
@@ -143,7 +83,7 @@ export const HoverMenu = () => {
   return (
     <>
       <Box display="flex">
-        {headerMenu.map((menu) => (
+        {hoverMenu.map((menu: any) => (
           <div style={{position: "relative"}} key={menu.header}>
             <Button
               aria-controls="customized-menu"
@@ -164,7 +104,7 @@ export const HoverMenu = () => {
                 onMouseEnter={handleSelecrMenu(menu.id)}
                 onMouseLeave={handleSelecrMenu(-1)}
               >
-                {menu.subMenu.map((sub) => (
+                {menu.subMenu.map((sub: any) => (
                   <div className={classes.subMenu} key={sub.title}>
                     <List
                       component="nav"
@@ -172,7 +112,9 @@ export const HoverMenu = () => {
                       aria-label="menu-header"
                     >
                       <ListItem button className={classes.listMenu}>
-                        <ListItemText primary={sub.title} />
+                        <Typography variant="body1">
+                          <Link href={sub.link}>{sub.title}</Link>
+                        </Typography>
                       </ListItem>
                     </List>
                   </div>
