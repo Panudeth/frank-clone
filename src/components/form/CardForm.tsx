@@ -2,7 +2,14 @@ import React, {Dispatch, SetStateAction, useState} from "react"
 
 import * as yup from "yup"
 import {yupResolver} from "@hookform/resolvers"
-import {Typography, TextField, MenuItem, Button, Link} from "@material-ui/core"
+import {
+  Typography,
+  TextField,
+  MenuItem,
+  Button,
+  Link,
+  CircularProgress,
+} from "@material-ui/core"
 import {useForm, Controller} from "react-hook-form"
 import {db} from "../../firebase"
 import {InsuranceData} from "../../data/InsuranceData"
@@ -81,6 +88,8 @@ export const CardForm = ({
     phone: "",
   })
 
+  const [loader, setLoader] = useState<boolean>(false)
+
   const schema = yup.object().shape({
     brand: yup.string().required(),
     generation: yup.string().required(),
@@ -93,11 +102,8 @@ export const CardForm = ({
     resolver: yupResolver(schema),
   })
 
-  //   const handleExpandEdit = () => {
-  //     setExpandEdit((prev) => !expandEdit)
-  //   }
-
   const onSubmit = async (data: IFormInputData) => {
+    setLoader(true)
     try {
       const res = await db
         .collection("insurance")
@@ -122,77 +128,57 @@ export const CardForm = ({
         alert("ไม่พบ รายการ ประกันภัยที่คุณคต้องการ กรุณาค้าหาอีกครั้ง")
       }
       setSearctData(data)
-
       setData(result)
+      setLoader(false)
     } catch (e) {
       console.error(e)
+      setLoader(false)
     }
   }
   return (
-    <form onSubmit={handleSubmit(onSubmit)} style={{margin: "auto"}}>
-      <Typography variant="body1">รายละเอียดรถ</Typography>
-      <Controller
-        render={({onChange, onBlur, value, name}) => (
-          <TextField
-            select
-            color="primary"
-            placeholder="ยี่ห้อ"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            variant="outlined"
-            size="small"
-            margin="dense"
-            fullWidth={true}
-            error={!!errors.brand}
-            helperText={errors.brand?.message}
-            value={value}
-            onChange={(e) => {
-              setSearctData({...searchData, brand: e.target.value})
-              onChange(e.target.value)
-            }}
-          >
-            {brand.map((option) => (
-              <MenuItem
-                disabled={option.id === 0}
-                key={option.id}
-                value={option.value}
-              >
-                {option.label}
-              </MenuItem>
-            ))}
-          </TextField>
-        )}
-        name="brand"
-        control={control}
-        defaultValue={searchData.brand}
-      />
-      <Controller
-        render={({onChange, onBlur, value, name}) => (
-          <TextField
-            select={true}
-            color="primary"
-            placeholder="รุ่น"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            disabled={searchData.brand === "empty"}
-            variant="outlined"
-            size="small"
-            margin="dense"
-            fullWidth={true}
-            error={!!errors.generation}
-            helperText={errors.generation?.message}
-            value={value}
-            onChange={(e) => {
-              onChange(e.target.value)
-            }}
-          >
-            {generation
-              .filter(
-                (gen) => gen.type === searchData.brand || gen.value === "empty"
-              )
-              .map((option) => (
+    <div
+      style={
+        loader
+          ? {background: "#fff", opacity: "0.4", position: "relative"}
+          : {background: "#0000"}
+      }
+    >
+      {loader && (
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+          }}
+        >
+          <CircularProgress />
+        </div>
+      )}
+      <form onSubmit={handleSubmit(onSubmit)} style={{margin: "auto"}}>
+        <Typography variant="body1">รายละเอียดรถ</Typography>
+        <Controller
+          render={({onChange, onBlur, value, name}) => (
+            <TextField
+              select
+              color="primary"
+              placeholder="ยี่ห้อ"
+              InputLabelProps={{
+                shrink: true,
+              }}
+              variant="outlined"
+              size="small"
+              margin="dense"
+              fullWidth={true}
+              error={!!errors.brand}
+              helperText={errors.brand?.message}
+              value={value}
+              onChange={(e) => {
+                setSearctData({...searchData, brand: e.target.value})
+                onChange(e.target.value)
+              }}
+            >
+              {brand.map((option) => (
                 <MenuItem
                   disabled={option.id === 0}
                   key={option.id}
@@ -201,126 +187,170 @@ export const CardForm = ({
                   {option.label}
                 </MenuItem>
               ))}
-          </TextField>
-        )}
-        name="generation"
-        control={control}
-        defaultValue={searchData.generation}
-      />
-      <Controller
-        render={({onChange, onBlur, value, name}) => (
-          <TextField
-            select={true}
-            color="primary"
-            placeholder="รุ่น"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            disabled={
-              searchData.brand === "empty" && searchData.generation === "empty"
-            }
-            variant="outlined"
-            size="small"
-            margin="dense"
-            fullWidth={true}
-            error={!!errors.RegistrationYear}
-            helperText={errors.RegistrationYear?.message}
-            value={value}
-            onChange={(e) => {
-              onChange(e.target.value)
-            }}
-          >
-            <MenuItem disabled={true} value="empty">
-              เลือกปีจดทะเบียน
-            </MenuItem>
-            <MenuItem value="2019">2019 (2563)</MenuItem>
-            <MenuItem value="2018">2018 (2562)</MenuItem>
-            <MenuItem value="2017">2017 (2561)</MenuItem>
-          </TextField>
-        )}
-        name="RegistrationYear"
-        control={control}
-        defaultValue="empty"
-      />
-      {!onlyCarForm && (
-        <>
-          <Typography variant="body1" style={{margin: "30px 0 0px 0"}}>
-            รายละเอียดผู้ขับขี่
-          </Typography>
+            </TextField>
+          )}
+          name="brand"
+          control={control}
+          defaultValue={searchData.brand}
+        />
+        <Controller
+          render={({onChange, onBlur, value, name}) => (
+            <TextField
+              select={true}
+              color="primary"
+              placeholder="รุ่น"
+              InputLabelProps={{
+                shrink: true,
+              }}
+              disabled={searchData.brand === "empty"}
+              variant="outlined"
+              size="small"
+              margin="dense"
+              fullWidth={true}
+              error={!!errors.generation}
+              helperText={errors.generation?.message}
+              value={value}
+              onChange={(e) => {
+                onChange(e.target.value)
+              }}
+            >
+              {generation
+                .filter(
+                  (gen) =>
+                    gen.type === searchData.brand || gen.value === "empty"
+                )
+                .map((option) => (
+                  <MenuItem
+                    disabled={option.id === 0}
+                    key={option.id}
+                    value={option.value}
+                  >
+                    {option.label}
+                  </MenuItem>
+                ))}
+            </TextField>
+          )}
+          name="generation"
+          control={control}
+          defaultValue={searchData.generation}
+        />
+        <Controller
+          render={({onChange, onBlur, value, name}) => (
+            <TextField
+              select={true}
+              color="primary"
+              placeholder="รุ่น"
+              InputLabelProps={{
+                shrink: true,
+              }}
+              disabled={
+                searchData.brand === "empty" &&
+                searchData.generation === "empty"
+              }
+              variant="outlined"
+              size="small"
+              margin="dense"
+              fullWidth={true}
+              error={!!errors.RegistrationYear}
+              helperText={errors.RegistrationYear?.message}
+              value={value}
+              onChange={(e) => {
+                onChange(e.target.value)
+              }}
+            >
+              <MenuItem disabled={true} value="empty">
+                เลือกปีจดทะเบียน
+              </MenuItem>
+              <MenuItem value="2019">2019 (2563)</MenuItem>
+              <MenuItem value="2018">2018 (2562)</MenuItem>
+              <MenuItem value="2017">2017 (2561)</MenuItem>
+            </TextField>
+          )}
+          name="RegistrationYear"
+          control={control}
+          defaultValue="empty"
+        />
+        {!onlyCarForm && (
+          <>
+            <Typography variant="body1" style={{margin: "30px 0 0px 0"}}>
+              รายละเอียดผู้ขับขี่
+            </Typography>
 
-          <Controller
-            as={
-              <TextField
-                color="primary"
-                placeholder="ชื่อผู้ขับขี่"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                variant="outlined"
-                size="small"
-                margin="dense"
-                fullWidth={true}
-                error={!!errors.name}
-                helperText={errors.name?.message}
-              />
-            }
-            name="name"
-            control={control}
-            defaultValue=""
-          />
-          <Controller
-            as={
-              <TextField
-                color="primary"
-                placeholder="เบอร์โทรศัพท์มือถือสำหรับติดต่อ"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                variant="outlined"
-                size="small"
-                margin="dense"
-                fullWidth={true}
-                error={!!errors.phone}
-                helperText={errors.phone?.message}
-              />
-            }
-            name="phone"
-            control={control}
-            defaultValue=""
-          />
-        </>
-      )}
-      {!onlyCarForm && (
-        <Typography variant="body1" color="error" style={{marginTop: "30px"}}>
-          เหลือคลิกเดียวเท่านั้น!
-        </Typography>
-      )}
-      <Button
-        color="secondary"
-        variant="contained"
-        size="medium"
-        type="submit"
-        fullWidth={true}
-        style={{color: "var(--primary-blue)", fontWeight: "bold"}}
-      >
-        ค้นหาเบี้ยประกัน
-      </Button>
-      {!onlyCarForm && (
-        <>
-          <Typography variant="body1">
-            เพื่อดำเนินการต่อ คุณได้อ่านและยอมรับ
+            <Controller
+              as={
+                <TextField
+                  color="primary"
+                  placeholder="ชื่อผู้ขับขี่"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  variant="outlined"
+                  size="small"
+                  margin="dense"
+                  fullWidth={true}
+                  error={!!errors.name}
+                  helperText={errors.name?.message}
+                />
+              }
+              name="name"
+              control={control}
+              defaultValue=""
+            />
+            <Controller
+              as={
+                <TextField
+                  color="primary"
+                  placeholder="เบอร์โทรศัพท์มือถือสำหรับติดต่อ"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  variant="outlined"
+                  size="small"
+                  margin="dense"
+                  fullWidth={true}
+                  error={!!errors.phone}
+                  helperText={errors.phone?.message}
+                />
+              }
+              name="phone"
+              control={control}
+              defaultValue=""
+            />
+          </>
+        )}
+        {!onlyCarForm && (
+          <Typography variant="body1" color="error" style={{marginTop: "30px"}}>
+            เหลือคลิกเดียวเท่านั้น!
           </Typography>
-          <Typography variant="body1">
-            <Link style={{textDecoration: "underline", cursor: "pointer"}}>
-              นโยบายความเป็นส่วนตัว
-            </Link>
-            <span style={{margin: "0 5px"}}>และ</span>
-            <Link style={{textDecoration: "underline", cursor: "pointer"}}>
-              ข้อตกลงเงื่อนไข
-            </Link>
-          </Typography>
-        </>
-      )}
-    </form>
+        )}
+        <Button
+          color="secondary"
+          variant="contained"
+          size="medium"
+          type="submit"
+          fullWidth={true}
+          style={{color: "var(--primary-blue)", fontWeight: "bold"}}
+          disabled={loader}
+        >
+          ค้นหาเบี้ยประกัน
+        </Button>
+        {!onlyCarForm && (
+          <>
+            <Typography variant="body1">
+              เพื่อดำเนินการต่อ คุณได้อ่านและยอมรับ
+            </Typography>
+            <Typography variant="body1">
+              <Link style={{textDecoration: "underline", cursor: "pointer"}}>
+                นโยบายความเป็นส่วนตัว
+              </Link>
+              <span style={{margin: "0 5px"}}>และ</span>
+              <Link style={{textDecoration: "underline", cursor: "pointer"}}>
+                ข้อตกลงเงื่อนไข
+              </Link>
+            </Typography>
+          </>
+        )}
+      </form>
+    </div>
   )
 }
