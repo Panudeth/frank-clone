@@ -1,4 +1,3 @@
-import classes from "*.module.css"
 import {
   Box,
   Collapse,
