@@ -141,7 +141,7 @@ export const Home = () => {
           <Grid container={true} spacing={1}>
             <Grid item={true} md={3} sm={6} xs={12} style={{margin: "0 auto"}}>
               <Box className={classes.penguinGank}>
-                <Typography variant="h4">
+                <Typography variant="h4" color="primary">
                   รวดเร็ว เรียบง่าย <br /> และจริงใจกับคุณ
                 </Typography>
                 <img
@@ -149,7 +149,7 @@ export const Home = () => {
                   src="/images/penguin-group.png"
                   alt="penguin-gank"
                 />
-                <Typography variant="h5">
+                <Typography variant="h5" color="primary">
                   ไม่ต้องรอ!! รับกรมธรรม์ผ่านทางออนไลน์ทันที
                 </Typography>
               </Box>
