@@ -6,7 +6,6 @@ import {InsuranceData} from "../data/InsuranceData"
 
 export const CarInsurance = () => {
   const [insuranceResult, setInsuranceResult] = useState<InsuranceData[]>([])
-  console.log("****", insuranceResult)
   return insuranceResult.length > 0 ? (
     <ResultInsurance dataIns={insuranceResult} setData={setInsuranceResult} />
   ) : (

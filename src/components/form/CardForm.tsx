@@ -149,7 +149,6 @@ export const CardForm = ({
             value={value}
             onChange={(e) => {
               setSearctData({...searchData, brand: e.target.value})
-              console.log(e.target.value)
               onChange(e.target.value)
             }}
           >
@@ -186,7 +185,6 @@ export const CardForm = ({
             helperText={errors.generation?.message}
             value={value}
             onChange={(e) => {
-              console.log(e.target.value)
               onChange(e.target.value)
             }}
           >
@@ -229,7 +227,6 @@ export const CardForm = ({
             helperText={errors.RegistrationYear?.message}
             value={value}
             onChange={(e) => {
-              console.log(e.target.value)
               onChange(e.target.value)
             }}
           >

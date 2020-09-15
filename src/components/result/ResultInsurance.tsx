@@ -66,7 +66,6 @@ export const ResultInsurance = ({
       setDefualtData(dataS)
     }
   }, [dataIns, sortData])
-  console.log(defualtData)
   const handleClick = () => {
     setOpen(!open)
   }
