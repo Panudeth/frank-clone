@@ -7,7 +7,6 @@ import {
   Card,
   CardContent,
   Typography,
-  Box,
   CardActionArea,
   Link,
 } from "@material-ui/core"

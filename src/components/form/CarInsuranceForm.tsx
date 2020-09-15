@@ -1,8 +1,13 @@
-import React, {useState} from "react"
+import React, {Dispatch, SetStateAction} from "react"
 import {Card, Typography} from "@material-ui/core"
 import {CardForm} from "./CardForm"
+import { InsuranceData } from "../../data/InsuranceData"
 
-export const CarInsuranceForm = () => {
+export const CarInsuranceForm = ({
+  setData,
+}: {
+  setData: Dispatch<SetStateAction<InsuranceData[]>>
+}) => {
   return (
     <div>
       <div style={{marginBottom: "30px"}}>
@@ -34,7 +39,7 @@ export const CarInsuranceForm = () => {
             alt=""
           />
         </div>
-        <CardForm />
+        <CardForm setData={setData} />
       </Card>
     </div>
   )

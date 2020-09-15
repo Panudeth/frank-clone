@@ -1,10 +1,15 @@
 import {Container, Grid, Hidden} from "@material-ui/core"
-import React from "react"
+import React, {useState} from "react"
 import {CarInsuranceForm} from "../components/form/CarInsuranceForm"
-import { ResultInsurance } from "../components/result/ResultInsurance"
+import {ResultInsurance} from "../components/result/ResultInsurance"
+import {InsuranceData} from "../data/InsuranceData"
 
 export const CarInsurance = () => {
-  return (
+  const [insuranceResult, setInsuranceResult] = useState<InsuranceData[]>([])
+  console.log("****", insuranceResult)
+  return insuranceResult.length > 0 ? (
+    <ResultInsurance dataIns={insuranceResult} setData={setInsuranceResult} />
+  ) : (
     <Container style={{padding: "50px 0"}}>
       <Grid
         container={true}
@@ -24,7 +29,7 @@ export const CarInsurance = () => {
           </Grid>
         </Hidden>
         <Grid item={true} md={4} xs={12}>
-          <CarInsuranceForm />
+          <CarInsuranceForm setData={setInsuranceResult} />
         </Grid>
         <Hidden smDown>
           <Grid item={true} md={4} style={{margin: "auto"}}>
@@ -36,7 +41,6 @@ export const CarInsurance = () => {
           </Grid>
         </Hidden>
       </Grid>
-      {/* <ResultInsurance /> */}
     </Container>
   )
 }

@@ -1,9 +1,11 @@
-import React, {useState} from "react"
+import React, {Dispatch, SetStateAction, useState} from "react"
 
 import * as yup from "yup"
 import {yupResolver} from "@hookform/resolvers"
 import {Typography, TextField, MenuItem, Button, Link} from "@material-ui/core"
 import {useForm, Controller} from "react-hook-form"
+import {db} from "../../firebase"
+import {InsuranceData} from "../../data/InsuranceData"
 
 interface IFormInputData {
   brand: string
@@ -12,14 +14,6 @@ interface IFormInputData {
   name: string
   phone: string
 }
-
-const schema = yup.object().shape({
-  brand: yup.string().required(),
-  generation: yup.string().required(),
-  RegistrationYear: yup.string().required(),
-  name: yup.string().required(),
-  phone: yup.string().required(),
-})
 
 const brand = [
   {
@@ -72,13 +66,27 @@ const generation = [
   },
 ]
 
-export const CardForm = ({onlyCarForm}: {onlyCarForm?: boolean}) => {
+export const CardForm = ({
+  onlyCarForm,
+  setData,
+}: {
+  onlyCarForm?: boolean
+  setData: Dispatch<SetStateAction<InsuranceData[]>>
+}) => {
   const [searchData, setSearctData] = useState<IFormInputData>({
     brand: "empty",
     generation: "empty",
     RegistrationYear: "",
     name: "",
     phone: "",
+  })
+
+  const schema = yup.object().shape({
+    brand: yup.string().required(),
+    generation: yup.string().required(),
+    RegistrationYear: yup.string().required(),
+    name: !onlyCarForm ? yup.string().required() : yup.string(),
+    phone: !onlyCarForm ? yup.string().required() : yup.string(),
   })
 
   const {handleSubmit, control, errors} = useForm<IFormInputData>({
@@ -89,8 +97,32 @@ export const CardForm = ({onlyCarForm}: {onlyCarForm?: boolean}) => {
   //     setExpandEdit((prev) => !expandEdit)
   //   }
 
-  const onSubmit = (data: IFormInputData) => {
+  const onSubmit = async (data: IFormInputData) => {
     console.log(data)
+    try {
+      const res = await db
+        .collection("insurance")
+        .where("carBrand", "array-contains-any", [data.brand])
+        .get()
+
+      const insuranceRes = res.docs.map(
+        (each) =>
+          new InsuranceData({...each.data(), id: each.id} as InsuranceData)
+      )
+      const result = insuranceRes.filter(
+        (ins) =>
+          ins.generation.indexOf(data.generation) > -1 &&
+          ins.registerYear.indexOf(data.RegistrationYear) > -1
+      )
+      if (result.length < 1) {
+        alert("ไม่พบ รายการ ประกันภัยที่คุณคต้องการ กรุณาค้าหาอีกครั้ง")
+      }
+      setSearctData(data)
+
+      setData(result)
+    } catch (e) {
+      console.error(e)
+    }
   }
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -130,7 +162,7 @@ export const CardForm = ({onlyCarForm}: {onlyCarForm?: boolean}) => {
         )}
         name="brand"
         control={control}
-        defaultValue={brand[0].value}
+        defaultValue={searchData.brand}
       />
       <Controller
         render={({onChange, onBlur, value, name}) => (
@@ -171,7 +203,7 @@ export const CardForm = ({onlyCarForm}: {onlyCarForm?: boolean}) => {
         )}
         name="generation"
         control={control}
-        defaultValue={generation[0].value}
+        defaultValue={searchData.generation}
       />
       <Controller
         render={({onChange, onBlur, value, name}) => (

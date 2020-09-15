@@ -1,4 +1,4 @@
-import React from "react"
+import React, {useState} from "react"
 import {
   makeStyles,
   Theme,
@@ -18,11 +18,13 @@ import {
   ListItemSecondaryAction,
 } from "@material-ui/core"
 import {red} from "@material-ui/core/colors"
+import {InsuranceData} from "../../data/InsuranceData"
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      maxWidth: "100%",
+          maxWidth: "100%",
+        margin:'0 0 20px 0'
     },
     media: {
       height: 0,
@@ -49,12 +51,17 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-export const ResultCard = () => {
+export const ResultCard = ({dataInsure}: {dataInsure: InsuranceData}) => {
   const classes = useStyles()
-  const [expanded, setExpanded] = React.useState(false)
+  const [expanded, setExpanded] = useState(false)
 
   const handleExpandClick = () => {
     setExpanded(!expanded)
+  }
+
+  const checkProtection = (status: boolean) => {
+    const result = status ? "คุ้มครอง" : "ไม่คุ้มครอง"
+    return result
   }
 
   return (
@@ -74,9 +81,9 @@ export const ResultCard = () => {
                   alt="ทิพย"
                 />
                 <div style={{textAlign: "left"}}>
-                  <Typography variant="body1">ชั้น 3</Typography>
-                  <Typography variant="body1">ทิพยประกันภัย</Typography>
-                  <Typography variant="h6">฿2,500</Typography>
+                  <Typography variant="body1">{`ชั้น ${dataInsure.classInsurance}`}</Typography>
+                  <Typography variant="body1">{dataInsure.brand}</Typography>
+                  <Typography variant="h6">{dataInsure.price}</Typography>
                   <Typography variant="caption">ต่อปี</Typography>
                 </div>
               </Box>
@@ -87,23 +94,29 @@ export const ResultCard = () => {
               <Box display="block">
                 <div className={classes.middleDetail}>
                   <Typography variant="body1">ทุนประกัน </Typography>
-                  <Typography variant="body1">฿0</Typography>
+                  <Typography variant="body1"></Typography>
                 </div>
                 <div className={classes.middleDetail}>
                   <Typography variant="body1">ค่าความเสียหายส่วนแรก</Typography>
-                  <Typography variant="body1">฿0.00</Typography>
+                  <Typography variant="body1">
+                    {dataInsure.firstDamageCos}
+                  </Typography>
                 </div>
                 <div className={classes.middleDetail}>
                   <Typography variant="body1">บุคคลภายนอก </Typography>
-                  <Typography variant="body1">฿1,000,000</Typography>
+                  <Typography variant="body1">{dataInsure.outsider}</Typography>
                 </div>
                 <div className={classes.middleDetail}>
                   <Typography variant="body1">ประเภทอู่ซ่อมรถ </Typography>
-                  <Typography variant="body1">ซ่อมอู่</Typography>
+                  <Typography variant="body1">
+                    {dataInsure.garageType}
+                  </Typography>
                 </div>
                 <div className={classes.middleDetail}>
                   <Typography variant="body1">ระบุผู้ขับขี่ </Typography>
-                  <Typography variant="body1">ไม่จำกัด</Typography>
+                  <Typography variant="body1">
+                    {dataInsure.identifyTheDriver}
+                  </Typography>
                 </div>
               </Box>
             </div>
@@ -139,13 +152,92 @@ export const ResultCard = () => {
               <ListItem divider={true}>
                 <ListItemText
                   primary="อุบัติเหตุแบบไม่มีคู่กรณี"
-                  secondary="ไม่คุ้มครอง
-"
+                  secondary={checkProtection(
+                    dataInsure.detail.accidentWithoutAparty
+                  )}
                 />
                 <ListItemSecondaryAction>
-                  <IconButton edge="end" aria-label="delete">
-                    ICON
-                  </IconButton>
+                  <div
+                    style={{
+                      backgroundImage:
+                        "url(https://www.frank.co.th/assets/coverages.svg)",
+                      width: "40px",
+                      height: "40px",
+                      opacity: dataInsure.detail.accidentWithoutAparty
+                        ? "1"
+                        : "0.5",
+                    }}
+                  ></div>
+                </ListItemSecondaryAction>
+              </ListItem>
+              <ListItem divider={true}>
+                <ListItemText
+                  primary="อุบัติเหตุรถชนรถ"
+                  secondary={checkProtection(dataInsure.detail.carAccident)}
+                />
+                <ListItemSecondaryAction>
+                  <div
+                    style={{
+                      backgroundImage:
+                        "url(https://www.frank.co.th/assets/coverages.svg)",
+                      width: "40px",
+                      height: "40px",
+                      backgroundPosition: "-50px 0px",
+                      opacity: dataInsure.detail.carAccident ? "1" : "0.5",
+                    }}
+                  ></div>
+                </ListItemSecondaryAction>
+              </ListItem>
+              <ListItem divider={true}>
+                <ListItemText
+                  primary="รถหาย"
+                  secondary={checkProtection(dataInsure.detail.lostCar)}
+                />
+                <ListItemSecondaryAction>
+                  <div
+                    style={{
+                      backgroundImage:
+                        "url(https://www.frank.co.th/assets/coverages.svg)",
+                      width: "40px",
+                      height: "40px",
+                      backgroundPosition: "-140px 0px",
+                      opacity: dataInsure.detail.lostCar ? "1" : "0.5",
+                    }}
+                  ></div>
+                </ListItemSecondaryAction>
+              </ListItem>
+              <ListItem divider={true}>
+                <ListItemText
+                  primary="ประเภทอู่ซ่อม"
+                  secondary={dataInsure.garageType}
+                />
+                <ListItemSecondaryAction>
+                  <div
+                    style={{
+                      backgroundImage:
+                        "url(https://www.frank.co.th/assets/coverages.svg)",
+                      width: "40px",
+                      height: "40px",
+                      backgroundPosition: "-95px 0px",
+                    }}
+                  ></div>
+                </ListItemSecondaryAction>
+              </ListItem>
+              <ListItem divider={true}>
+                <ListItemText
+                  primary="ภัยก่อการร้าย"
+                  secondary={dataInsure.detail.terrorism}
+                />
+                <ListItemSecondaryAction>
+                  <div
+                    style={{
+                      backgroundImage:
+                        "url(https://www.frank.co.th/assets/coverages.svg)",
+                      width: "40px",
+                      height: "40px",
+                      backgroundPosition: "-285px 0px",
+                    }}
+                  ></div>
                 </ListItemSecondaryAction>
               </ListItem>
             </List>

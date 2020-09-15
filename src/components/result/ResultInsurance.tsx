@@ -17,9 +17,9 @@ import {
   Typography,
 } from "@material-ui/core"
 import {ExpandLess, ExpandMore} from "@material-ui/icons"
-import React from "react"
+import React, {Dispatch, Fragment, useEffect, useState} from "react"
+import {InsuranceData} from "../../data/InsuranceData"
 import {CardForm} from "../form/CardForm"
-import {CarInsuranceForm} from "../form/CarInsuranceForm"
 import {ResultCard} from "./ResultCard"
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -27,18 +27,56 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       width: "100%",
       maxWidth: 360,
-      backgroundColor: theme.palette.background.paper,
     },
   })
 )
 
-export const ResultInsurance = () => {
+export const ResultInsurance = ({
+  dataIns,
+  setData,
+}: {
+  dataIns: InsuranceData[]
+  setData: Dispatch<React.SetStateAction<InsuranceData[]>>
+}) => {
   const classes = useStyles()
-  const [open, setOpen] = React.useState(true)
+  const [open, setOpen] = useState(true)
+  const [defualtData, setDefualtData] = useState<InsuranceData[]>(dataIns)
+  const [sortData, setSortData] = useState<"price" | "match">("match")
 
+  useEffect(() => {
+    if (sortData === "match") {
+      const dataS = dataIns.sort((a, b) => {
+        return (
+          parseInt(a.price.replace("฿", "")) -
+          parseInt(b.price.replace("฿", ""))
+        )
+      })
+      setDefualtData(dataS)
+    } else {
+      const dataS = dataIns.sort(
+        (a, b) =>
+          parseInt(b.price.replace("฿", "")) -
+          parseInt(a.price.replace("฿", ""))
+      )
+      setDefualtData(dataS)
+    }
+  }, [dataIns, sortData])
+  console.log(defualtData)
   const handleClick = () => {
     setOpen(!open)
   }
+
+  const handleChange = (
+    e: React.ChangeEvent<{
+      name?: string | undefined
+      value: unknown
+    }>
+  ) => {
+    const type = e.target.value as any
+    setSortData(type)
+    console.log(e.target.value)
+  }
+
   return (
     <Container>
       <Grid container={true} spacing={4}>
@@ -55,7 +93,7 @@ export const ResultInsurance = () => {
             <Collapse in={open} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
                 <ListItem>
-                  <CardForm onlyCarForm={true} />
+                  <CardForm onlyCarForm={true} setData={setData} />
                 </ListItem>
               </List>
             </Collapse>
@@ -73,19 +111,27 @@ export const ResultInsurance = () => {
               </Typography>
               <FormControl style={{width: "22%"}} variant="filled">
                 <InputLabel id="demo-simple-select-label">
-                  เรียงตามราคา (ถูกที่สุด)
+                  {sortData === "price"
+                    ? "เรียงตามราคา (ถูกที่สุด)"
+                    : "เหมาะกับคุณที่สุด"}
                 </InputLabel>
                 <Select
                   id="demo-simple-select"
                   value=""
-                  // onChange={handleChange}
+                  onChange={handleChange}
                 >
-                  <MenuItem value={10}>ถูกที่สุด</MenuItem>
-                  <MenuItem value={20}>เหมาะกับคุณที่สุด</MenuItem>
+                  <MenuItem value="price">ถูกที่สุด</MenuItem>
+                  <MenuItem value="match">เหมาะกับคุณที่สุด</MenuItem>
                 </Select>
               </FormControl>
             </Box>
-            <ResultCard />
+            <div style={{background: "#fff"}}>
+              {defualtData.map((item) => (
+                <Fragment key={item.id}>
+                  <ResultCard dataInsure={item} />
+                </Fragment>
+              ))}
+            </div>
           </div>
         </Grid>
       </Grid>
